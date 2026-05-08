@@ -50,7 +50,7 @@ Sure
 You decide
 
 ## My Solution
-```STORY
+```mermaid
 flowchart TD
     A[User bedtime story request] --> B[Request Analyzer]
     B --> C[Storyteller LLM]
