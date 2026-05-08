@@ -49,7 +49,24 @@ Sure
 - How long should the story be?
 You decide
 
-## My Solution
+
+# My Solution
+
+## Bedtime Storytelling Assistant
+
+This project implements a simple AI based bedtime storytelling assistant for children ages 5–10.  
+Given a user request, the system generates an age-appropriate bedtime story, evaluates it with an LLM judge, optionally revises it based on feedback, and converts the final story into an MP3 audio file.
+
+## Features
+
+- Generates warm, age-appropriate bedtime stories
+- Uses a request analyzer to infer theme, tone, characters, and safety constraints
+- Uses an LLM judge to evaluate story quality
+- Revises the story if it does not meet the quality threshold
+- Ask user's feedback after the first version
+- Converts the final story into speech and saves it as an MP3 file
+
+## System Design
 ```mermaid
 flowchart TD
     A[User bedtime story request] --> B[Request Analyzer]
@@ -67,3 +84,59 @@ flowchart TD
     K --> L[Text-to-Speech]
     L --> M[MP3 Bedtime Story]
 ```
+
+## How It Works
+
+The pipeline has six stages:
+1. **Request Analyzer**  
+   The model extracts the likely age range, story theme, tone, characters, and safety constraints from the user request.
+2. **Storyteller LLM**  
+   The model generates a bedtime story.
+3. **LLM Judge**  
+   A separate LLM call evaluates the story for age appropriateness, bedtime tone, creativity, safety, story structure, and alignment with the user request.
+4. **Revision Loop**  
+   If the judge score is below the threshold, the story is revised using the judge’s feedback.
+5. **User Feedback**  
+   The user can request changes, such as making the story shorter, gentler, funnier, or adding more characters.
+6. **Text-to-Speech**  
+   The final story is converted into an MP3 audio file, such that it can be played to the children.
+
+## Setup
+Install dependencies:
+```bash
+pip install -r requirements.txt
+```
+
+Set your OpenAI API key:
+```bash
+export OPENAI_API_KEY="your_api_key_here"
+```
+
+Run the script:
+```bash
+python main.py
+```
+
+## Example Usage
+
+```text
+What kind of bedtime story do you want to hear?
+A story about a brave little rabbit who is afraid of the dark.
+
+Would you like any changes?
+Make it longer and gentler.
+```
+
+The script will print the final story and save an audio file:
+
+```text
+bedtime_story.mp3
+```
+
+## Notes
+
+- The API key is loaded from the `OPENAI_API_KEY` environment variable that I set in my enviroment.
+- The system uses different temperature settings for different stages:
+  - Lower temperature for analysis and judging to keep outputs stable and consistent
+  - Higher temperature for creative story generation to embrace more imagination and variety
+  - Medium temperature for revision for balancing stablness and creativity

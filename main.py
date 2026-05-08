@@ -193,7 +193,6 @@ def main():
 
     audio_path = generate_voice(story)
     print(f"\nAudio story saved to: {audio_path}")
-
     print("\n---\nJudge feedback:\n")
     print(feedback)
 
