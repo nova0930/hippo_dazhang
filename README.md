@@ -121,7 +121,7 @@ python main.py
 
 ```text
 What kind of bedtime story do you want to hear?
-A story about a brave little rabbit who is afraid of the dark.
+A creative horror story about a rabbit.
 
 Would you like any changes?
 Make it longer and gentler.
