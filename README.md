@@ -48,3 +48,17 @@ No more than 2-3 hours
 Sure
 - How long should the story be?
 You decide
+
+## My Solution
+```STORY
+flowchart TD
+    A[User bedtime story request] --> B[Request Analyzer]
+    B --> C[Storyteller LLM]
+    C --> D[LLM Judge]
+    D --> E{Passes quality threshold?}
+    E -- No --> F[Revision Prompt]
+    F --> C
+    E -- Yes --> G[Final Story Text]
+    G --> H[Text-to-Speech]
+    H --> I[MP3 Bedtime Story]
+```

@@ -33,24 +33,26 @@
 
 import os
 import json
-import openai
+from openai import OpenAI
 
 MODEL = "gpt-3.5-turbo"
+TTS_MODEL = "gpt-4o-mini-tts"
+client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
+
 
 
 def call_model(prompt: str, max_tokens=1200, temperature=0.7) -> str:
-    openai.api_key = os.getenv("OPENAI_API_KEY")
-    if not openai.api_key:
+    if not os.getenv("OPENAI_API_KEY"):
         raise RuntimeError("Please set OPENAI_API_KEY before running.")
 
-    resp = openai.ChatCompletion.create(
+    resp = client.chat.completions.create(
         model=MODEL,
         messages=[{"role": "user", "content": prompt}],
-        stream=False,
         max_tokens=max_tokens,
         temperature=temperature,
     )
-    return resp.choices[0].message["content"]
+
+    return resp.choices[0].message.content
 
 
 def analyze_request(user_request: str) -> str:
@@ -139,6 +141,21 @@ def revise_story(user_request: str, story: str, judge_feedback: str) -> str:
     return call_model(prompt, temperature=0.7)
 
 
+def generate_voice(story: str, output_path: str = "bedtime_story.mp3") -> str:
+    speech = client.audio.speech.create(
+        model=TTS_MODEL,
+        voice="marin",
+        input=story,
+        instructions=(
+            "Read this as a warm, gentle bedtime storyteller. "
+            "Use a calm pace, soft tone, and soothing emotional expression for children."
+        ),
+    )
+
+    speech.write_to_file(output_path)
+    return output_path
+
+
 def main():
     user_request = input("What kind of bedtime story do you want to hear? ")
 
@@ -155,6 +172,10 @@ def main():
 
     print("\nFinal bedtime story:\n")
     print(story)
+
+    audio_path = generate_voice(story)
+    print(f"\nAudio story saved to: {audio_path}")
+
     print("\n---\nJudge feedback:\n")
     print(feedback)
 

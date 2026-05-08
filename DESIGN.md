@@ -3,13 +3,14 @@
 ```mermaid
 flowchart TD
     A[User bedtime story request] --> B[Request Analyzer]
-    B --> C[Story Planner]
-    C --> D[Storyteller LLM]
-    D --> E[LLM Judge]
-    E --> F{Passes quality threshold?}
-    F -- Yes --> G[Final Story]
-    F -- No --> H[Revision Prompt]
-    H --> D
+    B --> C[Storyteller LLM]
+    C --> D[LLM Judge]
+    D --> E{Passes quality threshold?}
+    E -- No --> F[Revision Prompt]
+    F --> C
+    E -- Yes --> G[Final Story Text]
+    G --> H[Text-to-Speech]
+    H --> I[MP3 Bedtime Story]
 ```
 
 ## Design Summary
