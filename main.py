@@ -57,11 +57,9 @@ def call_model(prompt: str, max_tokens=1200, temperature=0.7) -> str:
 
 def analyze_request(user_request: str) -> str:
     prompt = f"""
-        You are a bedtime story planner.
-
+        You are a bedtime story analyzer.
         Analyze this request for a children's bedtime story:
         "{user_request}"
-
         Return a concise plan with:
         - likely target age between 5 and 10
         - main characters
@@ -75,7 +73,7 @@ def analyze_request(user_request: str) -> str:
 
 def generate_story(user_request: str, plan: str) -> str:
     prompt = f"""
-        You are a warm, imaginative children's bedtime storyteller.
+        You are a warm, creative children's bedtime storyteller.
         Write a bedtime story for ages 5-10.
         User request:
         {user_request}
@@ -96,13 +94,10 @@ def generate_story(user_request: str, plan: str) -> str:
 def judge_story(user_request: str, story: str) -> str:
     prompt = f"""
         You are an LLM judge evaluating a bedtime story for children ages 5-10.
-
         Original user request:
         {user_request}
-
         Story:
         {story}
-
         Evaluate the story using these criteria:
         1. Age appropriateness
         2. Bedtime tone
@@ -110,7 +105,6 @@ def judge_story(user_request: str, story: str) -> str:
         4. Creativity
         5. Safety
         6. Whether it follows the user's request
-
         Return valid JSON only:
         {{
         "score": 1-10,
@@ -122,20 +116,35 @@ def judge_story(user_request: str, story: str) -> str:
         """
     return call_model(prompt, temperature=0.1)
 
+def revise_story_with_user_feedback(user_request: str, story: str, user_feedback: str) -> str:
+    prompt = f"""
+        You are collecting feedback from the user and revising a bedtime story for children ages 5-10.
+        Original user request:
+        {user_request}
+        Current story:
+        {story}
+        User feedback:
+        {user_feedback}
+        Revise the story based on the user's feedback while keeping it:
+        - age-appropriate for children 5-10
+        - warm and gentle
+        - suitable for bedtime
+        - safe and non-scary
+        - coherent with a clear beginning, middle, and ending
+        Return only the revised final story.
+        """
+    return call_model(prompt, temperature=0.6)
+
 
 def revise_story(user_request: str, story: str, judge_feedback: str) -> str:
     prompt = f"""
         Revise the bedtime story based on the judge feedback.
-
         Original user request:
         {user_request}
-
         Original story:
         {story}
-
         Judge feedback:
         {judge_feedback}
-
         Return only the improved final story.
         """
     return call_model(prompt, temperature=0.7)
@@ -151,7 +160,6 @@ def generate_voice(story: str, output_path: str = "bedtime_story.mp3") -> str:
             "Use a calm pace, soft tone, and soothing emotional expression for children."
         ),
     )
-
     speech.write_to_file(output_path)
     return output_path
 
@@ -172,6 +180,16 @@ def main():
 
     print("\nFinal bedtime story:\n")
     print(story)
+
+    user_feedback = input(
+        "\nWould you like any changes? For example: make it shorter, gentler, funnier, "
+        "add more animals, or characters, or type 'no' to keep it as is: "
+    )
+
+    if user_feedback.strip().lower() not in ["no", "n", "none", ""]:
+        story = revise_story_with_user_feedback(user_request, story, user_feedback)
+        print("\nRevised bedtime story:\n")
+        print(story)
 
     audio_path = generate_voice(story)
     print(f"\nAudio story saved to: {audio_path}")

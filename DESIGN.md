@@ -8,9 +8,14 @@ flowchart TD
     D --> E{Passes quality threshold?}
     E -- No --> F[Revision Prompt]
     F --> C
-    E -- Yes --> G[Final Story Text]
-    G --> H[Text-to-Speech]
-    H --> I[MP3 Bedtime Story]
+    E -- Yes --> G[Story Draft]
+    G --> H[Ask User for Feedback]
+    H --> I{User wants changes?}
+    I -- Yes --> J[User Feedback Revision]
+    J --> K[Final Story Text]
+    I -- No --> K[Final Story Text]
+    K --> L[Text-to-Speech]
+    L --> M[MP3 Bedtime Story]
 ```
 
 ## Design Summary
